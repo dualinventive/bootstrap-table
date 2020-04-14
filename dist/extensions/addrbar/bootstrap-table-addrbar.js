@@ -4,7 +4,7 @@
 	(global = global || self, factory(global.jQuery));
 }(this, (function ($) { 'use strict';
 
-	$ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+	$ = $ && Object.prototype.hasOwnProperty.call($, 'default') ? $['default'] : $;
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -1405,6 +1405,19 @@
 	  return _setPrototypeOf(o, p);
 	}
 
+	function _isNativeReflectConstruct() {
+	  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+	  if (Reflect.construct.sham) return false;
+	  if (typeof Proxy === "function") return true;
+
+	  try {
+	    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+	    return true;
+	  } catch (e) {
+	    return false;
+	  }
+	}
+
 	function _assertThisInitialized(self) {
 	  if (self === void 0) {
 	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -1419,6 +1432,23 @@
 	  }
 
 	  return _assertThisInitialized(self);
+	}
+
+	function _createSuper(Derived) {
+	  return function () {
+	    var Super = _getPrototypeOf(Derived),
+	        result;
+
+	    if (_isNativeReflectConstruct()) {
+	      var NewTarget = _getPrototypeOf(this).constructor;
+
+	      result = Reflect.construct(Super, arguments, NewTarget);
+	    } else {
+	      result = Super.apply(this, arguments);
+	    }
+
+	    return _possibleConstructorReturn(this, result);
+	  };
 	}
 
 	function _superPropBase(object, property) {
@@ -1452,7 +1482,7 @@
 	}
 
 	function _slicedToArray(arr, i) {
-	  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+	  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
 	}
 
 	function _arrayWithHoles(arr) {
@@ -1460,10 +1490,7 @@
 	}
 
 	function _iterableToArrayLimit(arr, i) {
-	  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-	    return;
-	  }
-
+	  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
 	  var _arr = [];
 	  var _n = true;
 	  var _d = false;
@@ -1489,8 +1516,25 @@
 	  return _arr;
 	}
 
+	function _unsupportedIterableToArray(o, minLen) {
+	  if (!o) return;
+	  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+	  var n = Object.prototype.toString.call(o).slice(8, -1);
+	  if (n === "Object" && o.constructor) n = o.constructor.name;
+	  if (n === "Map" || n === "Set") return Array.from(n);
+	  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+	}
+
+	function _arrayLikeToArray(arr, len) {
+	  if (len == null || len > arr.length) len = arr.length;
+
+	  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+	  return arr2;
+	}
+
 	function _nonIterableRest() {
-	  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+	  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 	}
 
 	/**
@@ -1570,15 +1614,20 @@
 	  return url;
 	}
 
-	$.BootstrapTable =
-	/*#__PURE__*/
-	function (_$$BootstrapTable) {
+	$.extend($.fn.bootstrapTable.defaults, {
+	  addrbar: false,
+	  addrPrefix: ''
+	});
+
+	$.BootstrapTable = /*#__PURE__*/function (_$$BootstrapTable) {
 	  _inherits(_class, _$$BootstrapTable);
+
+	  var _super = _createSuper(_class);
 
 	  function _class() {
 	    _classCallCheck(this, _class);
 
-	    return _possibleConstructorReturn(this, _getPrototypeOf(_class).apply(this, arguments));
+	    return _super.apply(this, arguments);
 	  }
 
 	  _createClass(_class, [{
@@ -1594,11 +1643,11 @@
 	        var _prefix = this.options.addrPrefix || ''; // 优先级排序: 用户指定值最优先, 未指定时从地址栏获取, 未获取到时采用默认值
 
 
-	        this.options.pageNumber = +_GET("".concat(_prefix, "page")) || $.BootstrapTable.DEFAULTS.pageNumber;
-	        this.options.pageSize = +_GET("".concat(_prefix, "size")) || $.BootstrapTable.DEFAULTS.pageSize;
-	        this.options.sortOrder = _GET("".concat(_prefix, "order")) || $.BootstrapTable.DEFAULTS.sortOrder;
-	        this.options.sortName = _GET("".concat(_prefix, "sort")) || $.BootstrapTable.DEFAULTS.sortName;
-	        this.options.searchText = _GET("".concat(_prefix, "search")) || $.BootstrapTable.DEFAULTS.searchText;
+	        this.options.pageNumber = this.options.pageNumber || +_GET("".concat(_prefix, "page")) || $.BootstrapTable.DEFAULTS.pageNumber;
+	        this.options.pageSize = this.options.pageSize || +_GET("".concat(_prefix, "size")) || $.BootstrapTable.DEFAULTS.pageSize;
+	        this.options.sortOrder = this.options.sortOrder || _GET("".concat(_prefix, "order")) || $.BootstrapTable.DEFAULTS.sortOrder;
+	        this.options.sortName = this.options.sortName || _GET("".concat(_prefix, "sort")) || $.BootstrapTable.DEFAULTS.sortName;
+	        this.options.searchText = this.options.searchText || _GET("".concat(_prefix, "search")) || $.BootstrapTable.DEFAULTS.searchText;
 	        var _onLoadSuccess = this.options.onLoadSuccess;
 
 	        this.options.onLoadSuccess = function (data) {
