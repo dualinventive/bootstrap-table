@@ -80,11 +80,11 @@ $.BootstrapTable = class extends $.BootstrapTable {
       const _prefix = this.options.addrPrefix || ''
 
       // 优先级排序: 用户指定值最优先, 未指定时从地址栏获取, 未获取到时采用默认值
-      this.options.pageNumber = +_GET(`${_prefix}page`) || $.BootstrapTable.DEFAULTS.pageNumber
-      this.options.pageSize = +_GET(`${_prefix}size`) || $.BootstrapTable.DEFAULTS.pageSize
-      this.options.sortOrder = _GET(`${_prefix}order`) || $.BootstrapTable.DEFAULTS.sortOrder
-      this.options.sortName = _GET(`${_prefix}sort`) || $.BootstrapTable.DEFAULTS.sortName
-      this.options.searchText = _GET(`${_prefix}search`) || $.BootstrapTable.DEFAULTS.searchText
+      this.options.pageNumber = this.options.pageNumber || (+_GET(`${_prefix}page`) || $.BootstrapTable.DEFAULTS.pageNumber)
+      this.options.pageSize = this.options.pageSize || (+_GET(`${_prefix}size`) || $.BootstrapTable.DEFAULTS.pageSize)
+      this.options.sortOrder = this.options.sortOrder || ( _GET(`${_prefix}order`) || $.BootstrapTable.DEFAULTS.sortOrder)
+      this.options.sortName = this.options.sortName || ( _GET(`${_prefix}sort`) || $.BootstrapTable.DEFAULTS.sortName)
+      this.options.searchText = this.options.searchText || (_GET(`${_prefix}search`) || $.BootstrapTable.DEFAULTS.searchText)
 
       const _onLoadSuccess = this.options.onLoadSuccess
 
